@@ -21,6 +21,7 @@ Parses command line options for JavaScript CLI commands.  Supports the following
 * Automatic usage and help generation
 
 ## Usage
+```js
     const commandly = require("commandly");
     const options = commandly
       .name("command")
@@ -54,17 +55,22 @@ Parses command line options for JavaScript CLI commands.  Supports the following
 
       }
     }
+```
+
 
 ## API
 
 ### name(name)
 The name of the command for usage
 
+
 ### version(version)
 The version of the command for usage
 
+
 ### description(description)
 The description of the command for usage
+
 
 ### argument(argument)
 ### argument(name, description, required = false, multiple = false) {
@@ -76,4 +82,70 @@ Defines an argument for the command. Members include:
    * defaultValue: Default value of argument if not given
    * validator: A validator function (returns false or throws an error)
    * command: Specifies that this argument is only valid with a specific command
+
+
+### command(command)
+### command(name, description)
+Defines a command for the command (github style)
+   * name: Command name
+   * description: Command description
+
+
+### option(option)
+### option(name, alias, type, description, required)
+Defines an option for the command
+   * name: Option name (used with --xxxx)
+   * alias: Option alias (used as -X) (optional)
+   * type: Option type (string, int, float, boolean, flag, options, keyValue)
+   * description: Option description (optional)
+   * group: Name of the group of options this option belongs to (optional)
+   * variableName: Variable name to use with usage message (optional)
+   * required: Is this option required? (optional)
+   * multiple: Is option allowed more than once? (optional)
+   * list: Can a list of values be passed to the option? (optional)
+   * defaultValue: Default value of option (optional)
+   * parse: Function to parse value (called before value has been set to correct type -- is still a string) (optional)
+   * map: Function to map a value (called after value has been set to correct type) (optional)
+   * validator: A validator function (returns false or throws an error) (optional)
+   * command: Specifies that this option is only valid with a specific command (optional)
+
+
+### validate(function, string)
+Adds a cross option validator
+   * validator: Function which returns false or throws error if validation fails
+   * message: Message to display on validator returning false (optional)
+
+
+### usage(text)
+Sets the usage text to be used instead of the auto generated one
+   * text: The usage text (overrides auto-generated usage)
+
+
+### helpSection(name, text)
+Adds another section to the help printout
+   * name: Name of the section
+   * text: Text of the section
+
+
+### config(config)
+Sets config for commandly
+   * allowTrailingOptions: Allow options after the first argument (default: false)
+   * allowExtraArguments: Allow argumnets that were not defined by a call to argument() (default: false)
+   * commandVariableName: Variable name to hold command name returned from parse() (default: 'command')
+   * argumentsVariableName: Variable name to hold extra arguments returned from parse() (default: 'arguments')
+
+
+### parse(args)
+Parses the arguments and returns options, command and arguments
+Throws a ParseError on error
+   * args: The arguments (defaults to arguments from process.argv)
+
+
+### process(args)
+Parses and processes the arguments and returns options, command and arguments
+Prints usage on help argument
+Prints version on version argument
+Prints error and usage on error
+   * args: The arguments (defaults to arguments from process.argv)
+
 
