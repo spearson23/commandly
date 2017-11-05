@@ -124,7 +124,6 @@ class IntOption extends Option {
   coerce(value) {
     if (isNaN(value)) {
       throw new ParseError(ParseError.INVALID_VALUE, "Value (" + value + ") for option " + this.name + " is not an integer.");
-      return;
     }
     const f = parseFloat(value);
     if (f % 1 != 0) {
