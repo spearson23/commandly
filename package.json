@@ -1,0 +1,31 @@
+{
+  "name": "commandly",
+  "version": "1.0.0",
+  "description": "The ultimate command line parser",
+  "main": "./lib",
+  "repository": "https://github.com/spearson23/commandly",
+  "author": "Steven Pearson <spearson23@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testRegex": ".*.test.js$",
+    "roots": [
+      "src/main/javscript",
+      "src/test/javascript"
+    ]
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.0",
+    "babel-jest": "^21.2.0",
+    "babel-preset-env": "^1.6.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "jest": "^21.2.1",
+    "table-layout": "^0.4.2",
+    "webpack": "^3.8.1",
+    "webpack-stream": "^4.0.0"
+  }
+}
