@@ -33,12 +33,13 @@ Parses command line options for JavaScript CLI commands.  Supports the following
       .option({ name: 'int', alias: 'i', description: 'An integer option', type: 'int', required: true, variableName: 'val' })
       .option({ name: 'float', description: 'A float option with no short form', type: 'int', required: true, variableName: 'val' })
       .option({ name: 'option', alias: 'o', description: 'An option which can only be one of several values', type: 'options', options: [ 'one', 'two', 'three' ] })
-      .option({ name: 'required', alias: 'r', description: 'An integer option', type: 'int', required: true, variableName: 'val' })
+      .option({ name: 'required', alias: 'r', description: 'A required integer option', type: 'int', required: true, variableName: 'val' })
       .option({ name: 'multiple', alias: 'm', description: 'An option that is allow to return multple times', type: 'string', multiple: true })
       .option({ name: 'list', alias: 'l', description: 'An option that takes a list of values', type: 'string', list: true })
       .option({ name: 'validate', alias: 'V', description: 'An option which will be validated', type: 'int', validate: (x) => { return x>10; } })
       .option({ name: 'command', alias: 'c', description: 'An option that is only valid for the add command', type: 'string', command: "add" })
       .option({ name: 'group', alias: 'g', description: 'Grouping of options for display in help text', type: 'string', group: "Group 1" })
+      .option({ name: 'parse', alias: 'p', description: 'Custom parsing', type: 'int', parse: (x) => { if (x === 'one') return 1; } })
       .command({ name: "add", description: "Description of the add command" })
       .command({ name: "remove", description: "Description of the remove command" })
       .command({ name: "save", description: "Description of the save command" })
@@ -47,15 +48,72 @@ Parses command line options for JavaScript CLI commands.  Supports the following
       .argument({ name: "other", description: "The rest of the arguments", multiple: true })
       .helpSection('More Info', 'For more info see: http://www.github.com/spearson/commandly')
       .helpSection('Author', 'Steven Pearson')
-      .process();
+      .process(argv);
 
-    if (options.command === 'add') {
-      if (opitons.boolean) && (opitons.flag) {
-        const num = options.int + options.float + 10.0;
-
+    switch (options.command) {
+      case 'add': {
+        if ((options.string === 'string') && (options.boolean)) {
+        }
+      }
+      case 'remove': {
+        if ((options.int === 3) && (options.float === 5.4) && (options.multiple.findIndex('here') >= 0)) {
+        }
+      }
+      case 'save': {
+        if (options.option === 'two') {
+        }
       }
     }
 ```
+
+```
+$ commmand --help
+
+A command to run stuff
+
+
+Usage:
+  command (--int|-i) <val> --float <val> (--required|-r) <val> [options]
+          <first> [<other>]...[<other>]
+  command add (--int|-i) <val> --float <val> (--required|-r) <val> [options]
+          <first> [<addArg>] [<other>]...[<other>]
+  command remove (--int|-i) <val> --float <val> (--required|-r) <val> [options]
+          <first> [<other>]...[<other>]
+  command save (--int|-i) <val> --float <val> (--required|-r) <val> [options]
+          <first> [<other>]...[<other>]
+
+
+Options:
+  -h, --help <boolean>      Parints help message
+  -v, --version <boolean>   Prints version
+  -s, --string <string>     A string option
+  -b, --boolean <boolean>   A boolean (flag) option
+  -f, --flag <boolean>      Another boolean (flag) option
+  -i, --int <val>           An integer option
+  --float <val>             A float option with no short form
+  -o, --option <options>    An option which can only be one of several values
+  -r, --required <val>      An integer option
+  -m, --multiple <string>   An option that is allow to return multple times
+  -l, --list <string>       An option that takes a list of values
+  -V, --validate <int>      An option which will be validated
+
+add Options:
+  -c, --command <string>   An option that is only valid for the add command
+
+Group 1 Options:
+  -g, --group <string>   Grouping of options for display in help text
+
+
+More Info:
+  For more info see: http://www.github.com/spearson/commandly
+
+
+Author:
+  Steven Pearson
+```
+
+
+For more, see Examples below.
 
 
 ## API
@@ -149,3 +207,80 @@ Prints error and usage on error
    * args: The arguments (defaults to arguments from process.argv)
 
 
+## Examples
+
+### Basic types
+Options can be either string, int, float, boolean/flag, option or key/value.
+```js
+  const options = commandly
+    .option({ name: 'string', alias: 's', description: 'A string option', type: 'string' })
+    .option({ name: 'boolean', alias: 'b', description: 'A boolean (flag) option', type: 'boolean' })
+    .option({ name: 'flag', alias: 'f', description: 'Another boolean (flag) option', type: 'boolean' })
+    .option({ name: 'int', alias: 'i', description: 'An integer option', type: 'int',  })
+    .option({ name: 'float', description: 'A float option with no short form', type: 'int',  })
+    .option({ name: 'option', alias: 'o', description: 'An option which can only be one of several values', type: 'options', options: [ 'one', 'two', 'three' ] })
+    .option({ name: 'keyvalue', alias: 'k', description: 'An option which has a key and value', type: 'keyvalue' })
+    .process([ '--string', 'text', '--boolean', '--flag', '--int', '3', '--float', '5.4', '--option', 'one', '-keyvalue', 'key=value' ]);
+  options.string = 'text';
+  options.boolean = true;
+  options.flag = true;
+  options.int = 3;
+  options.float = 5.4';
+  options.option = 'one';
+  options.keyvalue.key = 'value';
+```
+
+### Aliases
+Options can have short forms (-b).
+Multiple boolean options can be combine together on command line (-bf)
+```js
+  const options = commandly
+    .option({ name: 'boolean', alias: 'b', description: 'A boolean (flag) option', type: 'boolean' })
+    .option({ name: 'flag', alias: 'f', description: 'Another boolean (flag) option', type: 'boolean' })
+    .option({ name: 'int', alias: 'i', description: 'An integer option', type: 'int', required: true, variableName: 'val' })
+    .process([ '-bf', '-i', '3' ]);
+  options.boolean = true;
+  options.flag = true;
+  options.int = 3;
+```
+
+### Multiple and list options
+Options with multiple values can be either specified multiple times or as lists or as key/values.
+```js
+  const options = commandly
+    .option({ name: 'string', alias: 's', description: 'A string option', type: 'string', multiple: true })
+    .option({ name: 'int', alias: 'i', description: 'An integer option', type: 'int', list: true })
+    .option({ name: 'keyvalue', alias: 'k', description: 'An option which has a key and value', type: 'keyvalue', multiple: true })
+    .process([ '--string', 'text', '--string', 'text2', '--int', '3,5,7', '--keyvalue', 'key=value', '--keyvalue', 'key2=value2' ]);
+  options.string = [ 'text', 'test2' ];
+  options.int = [ 3, 5, 7 ];
+  options.keyvalue.key = 'value';
+  options.keyvalue.key2 = 'value2';
+```
+
+### Required options
+Options can be required
+```js
+  const options = commandly
+    .option({ name: 'required', alias: 'r', description: 'An required integer option', type: 'int', required: true })
+    .process([ ]);
+  // Prints error message
+```
+
+### Default values options
+Options can be required
+```js
+  const options = commandly
+    .option({ name: 'default', alias: 'd', description: 'An option with a default value', type: 'int', defaultValue: 1 })
+    .process([ ]);
+  options.default === 1
+```
+
+### Options can have there own custom parser
+Define a custom parser for an options value
+```js
+  const options = commandly
+    .option({ name: 'date', alias: 'd', description: 'A date', type: 'int', parse: (x) => { return Date.parse(x).valueOf() } })
+    .process([ ]);
+  options.default === 1
+```
