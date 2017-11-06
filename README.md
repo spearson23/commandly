@@ -216,7 +216,10 @@ Options can be either string, int, float, boolean/flag, option or key/value.
     .option({ name: 'string', alias: 's', description: 'A string option', type: 'string' })
     .option({ name: 'boolean', alias: 'b', description: 'A boolean (flag) option', type: 'boolean' })
     .option({ name: 'flag', alias: 'f', description: 'Another boolean (flag) option', type: 'boolean' })
-    .option({ name: 'int', alias: 'i', description: 'An integer option', type: 'int',  })
+    .option({ name: 'int', alias: 'i', description: 'An integer option', type: 'int' })
+    .option({ name: 'float', description: 'A float option with no short form', type: 'int' })
+    .option({ name: 'date', alias: 'd', description: 'A date option returns a Javascript date', type: 'date' })
+    .option({ name: 'moment', alias: 'm', description: 'A momentjs option returns a momentjs moment', type: 'moment' })
     .option({ name: 'float', description: 'A float option with no short form', type: 'int',  })
     .option({ name: 'option', alias: 'o', description: 'An option which can only be one of several values', type: 'options', options: [ 'one', 'two', 'three' ] })
     .option({ name: 'keyvalue', alias: 'k', description: 'An option which has a key and value', type: 'keyvalue' })
@@ -229,6 +232,27 @@ Options can be either string, int, float, boolean/flag, option or key/value.
   options.option = 'one';
   options.keyvalue.key = 'value';
 ```
+
+### Dates and Moments
+Date and Moment options use momentjs library (http://momentjs.com) to parse dates. They can take two extra arguments:
+* format: The format of the date strign (http://momentjs.com/docs/#/parsing/string-format/)
+* strict: Whether to be strict or not in date parsing
+```js
+  const options = commandly
+    .option({ name: 'date', alias: 'd', description: 'A date option returns a Javascript date', type: 'date', format: 'YYYY-MM-DD' })
+    .process([ '--date', '1999-12-31' ]);
+  options.date = true;
+```
+
+### Options Options
+An option of type 'options', must be one of of the given options
+```js
+  const options = commandly
+    .option({ name: 'option', alias: 'o', description: 'An option which can only be one of several values', type: 'options', options: [ 'one', 'two', 'three' ] })
+    .process([ '--option', 'five' ]);
+  // Prints error, not valid
+```
+
 
 ### Aliases
 Options can have short forms (-b).
@@ -268,7 +292,7 @@ Options can be required
 ```
 
 ### Default values options
-Options can be required
+Options can have default values
 ```js
   const options = commandly
     .option({ name: 'default', alias: 'd', description: 'An option with a default value', type: 'int', defaultValue: 1 })
@@ -279,8 +303,25 @@ Options can be required
 ### Options can have there own custom parser
 Define a custom parser for an options value
 ```js
+  parseRoman(number) {
+    if (!number) return 0;
+    if (number.startsWith("M")) return 1000 + parseRoman(number.substring(1));
+    if (number.startsWith("CM")) return 900 + parseRoman(number.substring(2));
+    if (number.startsWith("D")) return 500 + parseRoman(number.substring(1));
+    if (number.startsWith("CD")) return 400 + parseRoman(number.substring(2));
+    if (number.startsWith("C")) return 100 + parseRoman(number.substring(1));
+    if (number.startsWith("XC")) return 90 + parseRoman(number.substring(2));
+    if (number.startsWith("L")) return 50 + parseRoman(number.substring(1));
+    if (number.startsWith("XL")) return 40 + parseRoman(number.substring(2));
+    if (number.startsWith("X")) return 10 + parseRoman(number.substring(1));
+    if (number.startsWith("IX")) return 9 + parseRoman(number.substring(2));
+    if (number.startsWith("V")) return 5 + parseRoman(number.substring(1));
+    if (number.startsWith("IV")) return 4 + parseRoman(number.substring(2));
+    if (number.startsWith("I")) return 1 + parseRoman(number.substring(1));
+    throw new ParseException("Value (" + number + ") is not a valid Roman Numeral");
+  }
   const options = commandly
-    .option({ name: 'date', alias: 'd', description: 'A date', type: 'int', parse: (x) => { return Date.parse(x).valueOf() } })
-    .process([ ]);
-  options.default === 1
+    .option({ name: 'roman', alias: 'r', description: 'A roman numeral', type: 'int', parse: (x) => { return parseRoman(x) } })
+    .process([ '--roman', 'MMXVII' ]);
+  options.roman === 2017;
 ```

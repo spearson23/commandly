@@ -1,5 +1,6 @@
 
 const commandly = require("../../main/javascript/commandly");
+const moment = require("moment");
 
 
 const USAGE = `A command to run stuff
@@ -173,6 +174,66 @@ test('Multiple flags', () => {
     ._parse([ "-fa" ]);
   expect(options.flag).toBe(true);
   expect(options.flag2).toBe(true);
+});
+
+
+test('Date option', () => {
+  const options = commandly
+  .reset()
+  .option({ name: 'date', alias: 'd', description: 'Date Option', type: 'date' })
+  ._parse([ "--date", '2017-01-01' ]);
+  expect(options.date).toEqual(new Date(2017, 0, 1));
+});
+test('Date UTC option', () => {
+  const options = commandly
+  .reset()
+  .option({ name: 'date', alias: 'd', description: 'Date Option', type: 'date' })
+  ._parse([ "--date", '2017-01-01T00:00:00.000Z' ]);
+  expect(options.date).toEqual(new Date('2017-01-01T00:00:00.000Z'));
+});
+test('Date with format', () => {
+  const options = commandly
+  .reset()
+  .option({ name: 'date', alias: 'd', description: 'Date Option', type: 'date', format: 'dddd, MMMM Do, YYYY' })
+  ._parse([ "--date", 'Monday, November 6th, 2017' ]);
+  expect(options.date).toEqual(new Date(2017, 10, 6));
+});
+test('Invalid Date option', () => {
+  moment.suppressDeprecationWarnings = true;
+  const options = commandly
+  .reset()
+  .option({ name: 'date', alias: 'd', description: 'Date Option', type: 'date' })
+  expect(() => { commandly._parse([ "--date", 'bad date' ]) } ).toThrow();
+});
+
+
+test('Moment option', () => {
+  const options = commandly
+  .reset()
+  .option({ name: 'moment', alias: 'm', description: 'Date Option', type: 'moment' })
+  ._parse([ "--moment", '2017-01-01' ]);
+  expect(options.moment.isSame(moment(new Date(2017, 0, 1)))).toBe(true);
+});
+test('Date UTC option', () => {
+  const options = commandly
+  .reset()
+  .option({ name: 'moment', alias: 'm', description: 'Date Option', type: 'moment' })
+  ._parse([ "--moment", '2017-01-01T00:00:00.000Z' ]);
+  expect(options.moment.isSame(moment('2017-01-01T00:00:00.000Z'))).toBe(true);
+});
+test('Date with format', () => {
+  const options = commandly
+  .reset()
+  .option({ name: 'moment', alias: 'm', description: 'Date Option', type: 'moment', format: 'dddd, MMMM Do, YYYY' })
+  ._parse([ "--moment", 'Monday, November 6th, 2017' ]);
+  expect(options.moment.isSame(moment(new Date(2017, 10, 6)))).toBe(true);
+});
+test('Invalid Date option', () => {
+  moment.suppressDeprecationWarnings = true;
+  const options = commandly
+  .reset()
+  .option({ name: 'moment', alias: 'm', description: 'Date Option', type: 'date' })
+  expect(() => { commandly._parse([ "--moment", 'bad moment' ]) } ).toThrow();
 });
 
 

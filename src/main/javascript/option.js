@@ -1,4 +1,5 @@
 const ParseError = require("./parse-error");
+const moment = require('moment');
 
 /**
  * An option
@@ -44,6 +45,10 @@ class Option {
       case 'bool':
       case 'flag':
         return new BooleanOption(params);
+      case 'date':
+        return new DateOption(params);
+      case 'moment':
+        return new MomentOption(params);
       case 'options':
         return new OptionsOption(params);
       case 'keyValue':
@@ -150,6 +155,34 @@ class BooleanOption extends Option {
   }
   coerce(value) {
     return true;
+  }
+}
+class DateOption extends Option {
+  constructor(params) {
+    super(params);
+    this.format = params.format;
+    this.strict = params.strict;
+  }
+  coerce(value) {
+    var m = moment(value, this.format, this.strict);
+    if (!m.isValid()) {
+      throw new ParseError(ParseError.INVALID_VALUE, "Value (" + value + ") is not a valid date.");
+    }
+    return m.toDate();
+  }
+}
+class MomentOption extends Option {
+  constructor(params) {
+    super(params);
+    this.format = params.format;
+    this.strict = params.strict;
+  }
+  coerce(value) {
+    var m = moment(value, this.format, this.strict);
+    if (!m.isValid()) {
+      throw new ParseError(ParseError.INVALID_VALUE, "Value (" + value + ") is not a valid date.");
+    }
+    return m;
   }
 }
 class OptionsOption extends Option {
