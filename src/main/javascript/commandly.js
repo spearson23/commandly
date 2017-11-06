@@ -168,7 +168,8 @@ class Commandly {
    * defaultValue: Default value of option
    * parse: Function to parse value (called before value has been set to correct type -- is still a string)
    * map: Function to map a value (called after value has been set to correct type)
-   * validator: A validator function (returns false or throws an error)
+   * validate: A validation function (returns false or throws an error)
+   * validateMessage: Message to display if validate returns false.
    * command: Specifies that this option is only valid with a specific command
    *
    * deliminator Deliminator to use with list
@@ -631,6 +632,7 @@ class Commandly {
 
     return [ command, args ];
   }
+
 }
 
 

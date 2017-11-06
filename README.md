@@ -46,7 +46,7 @@ Parses command line options for JavaScript CLI commands.  Supports the following
       .argument({ name: "first", description: "A required argument", required: true })
       .argument({ name: "addArg", description: "An argument just for the add command", command: "add" })
       .argument({ name: "other", description: "The rest of the arguments", multiple: true })
-      .helpSection('More Info', 'For more info see: http://www.github.com/spearson/commandly')
+      .helpSection('More Info', 'For more info see: http://www.github.com/spearson23/commandly')
       .helpSection('Author', 'Steven Pearson')
       .process(argv);
 
@@ -105,7 +105,7 @@ Group 1 Options:
 
 
 More Info:
-  For more info see: http://www.github.com/spearson/commandly
+  For more info see: http://www.github.com/spearson23/commandly
 
 
 Author:
@@ -113,7 +113,7 @@ Author:
 ```
 
 
-For more, see Examples below.
+For more, see [Examples](#examples)
 
 
 ## API
@@ -138,7 +138,8 @@ Defines an argument for the command. Members include:
    * required: Is this argument required?
    * multiple: Is argument allowed more than once?
    * defaultValue: Default value of argument if not given
-   * validator: A validator function (returns false or throws an error)
+   * validate: A validation function (returns false or throws an error)
+   * validateMessage: Message to display if validate returns false.
    * command: Specifies that this argument is only valid with a specific command
 
 
@@ -164,7 +165,8 @@ Defines an option for the command
    * defaultValue: Default value of option (optional)
    * parse: Function to parse value (called before value has been set to correct type -- is still a string) (optional)
    * map: Function to map a value (called after value has been set to correct type) (optional)
-   * validator: A validator function (returns false or throws an error) (optional)
+   * validate: A validation function (returns false or throws an error)
+   * validateMessage: Message to display if validate returns false.
    * command: Specifies that this option is only valid with a specific command (optional)
 
 
@@ -234,7 +236,7 @@ Options can be either string, int, float, boolean/flag, option or key/value.
 ```
 
 ### Dates and Moments
-Date and Moment options use momentjs library (http://momentjs.com) to parse dates. They can take two extra arguments:
+Date and Moment options use momentjs library (http://momentjs.com) to parse dates. Date options return a JavaScript date, and moment options return a momentjs moment. They can take two extra arguments:
 * format: The format of the date strign (http://momentjs.com/docs/#/parsing/string-format/)
 * strict: Whether to be strict or not in date parsing
 ```js
@@ -325,3 +327,15 @@ Define a custom parser for an options value
     .process([ '--roman', 'MMXVII' ]);
   options.roman === 2017;
 ```
+
+### Validation
+Options can be validated separately with the validate param on the option function or as a whole with the validate function.
+Validation functions should return false to signal an error or throw an exception.
+```js
+  const options = commandly
+    .option({ name: 'positive', description: 'A positive integer', type: 'int', validate: (x) => { return (x >= 0); }, validateMessage: 'positive options must be greater than or equal zero' })
+    .option({ name: 'dependent', description: 'A dependent option', type: 'string')
+    .validate(options => { if (typeof options.positive !== 'undefined') return (typeof options.dependent !== 'undefined'); }, 'dependent option is required if positive option is specified.')
+    .process([ '--positive', '4', '--dependent', 'string' ])
+```
+

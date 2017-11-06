@@ -26,6 +26,7 @@ class Option {
     this.parse = params.parse;
     this.map = params.map;
     this.validate = params.validate;
+    this.validateMessage = params.validateMessage;
     this.isSet = false;
     this.defaultValue = params.defaultValue;
     if (this.multiple || this.list) {
@@ -78,7 +79,11 @@ class Option {
     if (this.validate) {
       try {
         if (!this.validate.call(this, value)) {
-          throw new ParseError(ParseError.INVALID_VALUE, "Value (" + value + ") is invalid for option " + this.name);
+          if (this.validateMessage) {
+            throw new ParseError(ParseError.INVALID_VALUE, this.validateMessage);
+          } else {
+            throw new ParseError(ParseError.INVALID_VALUE, "Value (" + value + ") is invalid for option " + this.name);
+          }
         }
       } catch (e) {
         throw e;
