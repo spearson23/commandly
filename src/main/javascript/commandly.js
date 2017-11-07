@@ -244,7 +244,6 @@ class Commandly {
     } else {
       argv = process.argv.slice(0);
       argv.splice(0, 2);
-      output = args;
     }
     return this._parse(argv);
   }
@@ -262,8 +261,10 @@ class Commandly {
       if (options.version) {
         process.stdout.write(this._version);
         process.stdout.write("\n");
+        process.exit(0);
       } else if (options.help) {
         this.printHelp();
+        process.exit(0);
       } else {
         return options;
       }
@@ -272,6 +273,7 @@ class Commandly {
       process.stderr.write(e.message);
       process.stderr.write("\n\n");
       this.printHelp(process.stderr);
+      process.exit(-1);
     }
   }
 
