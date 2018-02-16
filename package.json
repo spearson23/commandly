@@ -10,24 +10,28 @@
     "url": "https://github.com/spearson23/commandly"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "prepublish": "babel -d lib src"
   },
   "engines": {
     "node": ">=6.4.0"
   },
-  "main": "src/main/javascript/commandly.js",
+  "main": "lib/commandly.js",
   "files": [
-    "src/main/javascript"
+    "lib"
   ],
   "jest": {
     "testRegex": ".*.test.js$",
     "roots": [
-      "src/main/javscript",
-      "src/test/javascript"
+      "src"
     ]
   },
   "dependencies": {
     "moment": "^2.19.1",
     "table-layout": "^0.4.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
   }
 }

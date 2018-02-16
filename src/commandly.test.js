@@ -1,5 +1,5 @@
 
-const commandly = require("../../main/javascript/commandly");
+const commandly = require("./commandly");
 const moment = require("moment");
 
 
