@@ -31,6 +31,7 @@ Parses command line options for JavaScript CLI commands.  Supports the following
       .option({ name: 'boolean', alias: 'b', description: 'A boolean (flag) option', type: 'boolean' })
       .option({ name: 'flag', alias: 'f', description: 'Another boolean (flag) option', type: 'boolean' })
       .option({ name: 'int', alias: 'i', description: 'An integer option', type: 'int', required: true, variableName: 'val' })
+      .option({ name: 'date', alias: 'd', description: 'A date option', type: 'date', format: 'MM-DD-YYYY' })
       .option({ name: 'float', description: 'A float option with no short form', type: 'int', required: true, variableName: 'val' })
       .option({ name: 'option', alias: 'o', description: 'An option which can only be one of several values', type: 'options', options: [ 'one', 'two', 'three' ] })
       .option({ name: 'required', alias: 'r', description: 'A required integer option', type: 'int', required: true, variableName: 'val' })
